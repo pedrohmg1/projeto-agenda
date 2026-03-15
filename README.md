@@ -1,6 +1,6 @@
 Agenda Pro - Node.js e SQLite
 
-Uma aplicação web completa para gerenciamento de contatos, desenvolvida com foco em persistência de dados e rotas para controle de informações.
+Uma aplicação web completa para gerenciamento de contatos.
 Funcionalidades principais
 
     Cadastro de contatos: Permite registrar nome, idade, empresa e e-mail.
