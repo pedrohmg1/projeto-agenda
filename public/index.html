@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Contatos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <h1 class="text-3xl font-extrabold text-gray-900">📔 Agenda Pro</h1>
+            <div class="flex gap-2 w-full md:w-auto">
+                <input type="text" id="busca" placeholder="Buscar contato..." 
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-full">
+                <a href="/" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-lg font-bold">
+                    + Novo
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-2xl rounded-xl overflow-hidden">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-600 text-left text-xs uppercase font-bold tracking-wider">
+                        <th class="px-6 py-4">Nome</th>
+                        <th class="px-6 py-4">E-mail</th>
+                        <th class="px-6 py-4">Empresa</th>
+                        <th class="px-6 py-4 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let contatosRaw = [];
+        const corpo = document.getElementById('tabela-corpo');
+
+        function renderizar(lista) {
+            corpo.innerHTML = lista.map(c => `
+                <tr class="hover:bg-blue-50 transition">
+                    <td class="px-6 py-4 font-semibold text-gray-800">${c.nome}</td>
+                    <td class="px-6 py-4 text-gray-600">${c.email}</td>
+                    <td class="px-6 py-4 text-gray-500">${c.empresa || '-'}</td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="/delete/${c.id}" onclick="return confirm('Excluir contato?')" 
+                           class="text-red-500 hover:text-red-700 bg-red-50 px-3 py-1 rounded-md text-sm font-bold">
+                           🗑️ Excluir
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        fetch('/api/contatos').then(r => r.json()).then(data => {
+            contatosRaw = data;
+            renderizar(data);
+        });
+
+        document.getElementById('busca').addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            const filtrados = contatosRaw.filter(c => c.nome.toLowerCase().includes(termo));
+            renderizar(filtrados);
+        });
+    </script>
+</body>
+</html>

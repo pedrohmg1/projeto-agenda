@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Contatos - Agenda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">📋 Meus Contatos</h1>
+            <a href="index.html" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition font-medium shadow">
+                + Novo Contato
+            </a>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr class="bg-gray-800 text-white text-left text-sm uppercase font-semibold">
+                        <th class="px-5 py-3 border-b-2 border-gray-200">Nome</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200">E-mail</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200">Empresa</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 text-center">Idade</th>
+                        <th class="px-5 py-3 border-b-2 border-gray-200 text-center">Ações</th> </tr>
+                </thead>
+                <tbody id="tabela-corpo" class="text-gray-700">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Busca os contatos da API do seu servidor [cite: 398]
+        fetch('/api/contatos')
+            .then(response => response.json())
+            .then(contatos => {
+                const corpo = document.getElementById('tabela-corpo');
+                corpo.innerHTML = ""; // Limpa a tabela antes de preencher
+
+                contatos.forEach(c => {
+                    const linha = `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-200">
+                            <td class="px-5 py-4 text-sm font-medium text-gray-900">${c.nome}</td>
+                            <td class="px-5 py-4 text-sm">${c.email}</td>
+                            <td class="px-5 py-4 text-sm">${c.empresa || '-'}</td>
+                            <td class="px-5 py-4 text-sm text-center">${c.idade || '-'}</td>
+                            <td class="px-5 py-4 text-sm text-center">
+                                <a href="/delete/${c.id}" 
+                                   onclick="return confirm('Tem certeza que deseja excluir este contato?')"
+                                   class="text-red-600 hover:text-red-900 font-bold bg-red-100 px-3 py-1 rounded-full transition text-xs">
+                                   🗑️ Excluir
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    corpo.innerHTML += linha;
+                });
+            })
+            .catch(err => console.error("Erro ao carregar contatos:", err));
+    </script>
+</body>
+</html>
