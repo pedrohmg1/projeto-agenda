@@ -5,14 +5,10 @@ const db = require('./db/connection');
 const Contato = require('./models/contato');
 const PORT = 3000; 
 
-// 1. Configurações de Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// IMPORTANTE: Servir arquivos da pasta public, mas DESATIVAR o index automático
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
-// 2. Conexão com o Banco [cite: 229, 231]
 db.authenticate()
     .then(() => {
         console.log('Sucesso na conexão!');
@@ -20,19 +16,18 @@ db.authenticate()
     })
     .catch(err => console.log('Erro:', err)); 
 
-// 3. ROTAS
-
-// Rota principal (Cadastro)
+// Rota principal: Agora envia diretamente para a página de CADASTRO
 app.get('/', (req, res) => {
+    // Definimos que o index.html será o formulário de cadastro
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Rota da Página de Listagem [cite: 413, 414]
+// Rota para visualizar a LISTA de contatos
 app.get('/contatos', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'contatos.html'));
 });
 
-// Rota para Salvar 
+// Rota para Salvar o contato e redirecionar para a lista
 app.post('/add-contato', (req, res) => {
     Contato.create({
         nome: req.body.nome,
@@ -44,14 +39,14 @@ app.post('/add-contato', (req, res) => {
     .catch(err => res.status(500).send("Erro ao salvar"));
 });
 
-// API de Dados [cite: 398]
+// API para buscar dados
 app.get('/api/contatos', (req, res) => {
     Contato.findAll({ order: [['nome', 'ASC']] })
     .then(contatos => res.json(contatos))
     .catch(err => res.status(500).json(err));
 });
 
-// Excluir [cite: 400]
+// Rota para Excluir
 app.get('/delete/:id', (req, res) => {
     Contato.destroy({ where: { id: req.params.id } })
     .then(() => res.redirect('/contatos'))
